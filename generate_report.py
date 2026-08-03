@@ -5,6 +5,13 @@ import datetime
 import urllib.request
 import xml.etree.ElementTree as ET
 
+try:
+    from playwright.sync_api import sync_playwright
+    HAS_PLAYWRIGHT = True
+except ImportError:
+    HAS_PLAYWRIGHT = False
+
+
 # ---------------------------------------------------------------------------
 # Configuration & Constants
 # ---------------------------------------------------------------------------
@@ -40,6 +47,24 @@ def fetch_rss_items():
             print(f"[Warning] Failed to fetch feed {feed['name']}: {e}")
             
     return items
+
+
+def take_screenshot(html_path, output_path):
+    if not HAS_PLAYWRIGHT:
+        print("[Warning] Playwright not installed. Skipping dynamic screenshot.")
+        return
+    print(f"📸 Taking snapshot of {html_path}...")
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page(viewport={"width": 1280, "height": 900})
+            page.goto(f"file://{os.path.abspath(html_path)}")
+            page.wait_for_timeout(1500) # Wait for animations
+            page.screenshot(path=output_path, full_page=False)
+            browser.close()
+        print("✅ Daily snapshot saved successfully.")
+    except Exception as e:
+        print(f"❌ Failed to take screenshot: {e}")
 
 def build_anthropic_html(report_data):
     """
@@ -946,6 +971,10 @@ def main():
     with open(archive_path, "w", encoding="utf-8") as f:
         f.write(rendered_html)
     print(f"✅ Successfully archived report to {archive_path}")
+    # 5. Take daily dynamic screenshot
+    os.makedirs("assets", exist_ok=True)
+    take_screenshot("index.html", "assets/today_report.png")
+
 
 if __name__ == "__main__":
     main()

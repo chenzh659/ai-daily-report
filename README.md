@@ -28,6 +28,17 @@
   <img src="assets/preview.png" alt="Anthropic Editorial Style AI Daily Report Preview" width="900" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);" />
 </div>
 
+
+---
+
+## 📰 今日最新报告快照 (Today's Report)
+
+*下图为 GitHub Actions 机器人每天早晨自动拍摄的最新报告快照，内容与线上同步更新：*
+
+<div align="center">
+  <img src="assets/today_report.png" alt="Today's Report Snapshot" width="900" style="border-radius: 8px; box-shadow: 0 8px 24px rgba(0,0,0,0.12);" />
+</div>
+
 ---
 
 ## ✨ 核心亮点
