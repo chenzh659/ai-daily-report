@@ -1,0 +1,35 @@
+name: Daily AI Industry Report Generator
+
+on:
+  schedule:
+    # 每天 UTC 23:00 (相当于北京时间每天早上 7:00) 自动触发
+    - cron: '0 23 * * *'
+  workflow_dispatch: # 支持在 GitHub 界面上手动点击按钮立即运行
+
+permissions:
+  contents: write
+
+jobs:
+  generate-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.x
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Run Daily Report Generator
+        run: |
+          python generate_report.py
+
+      - name: Commit & Push Generated Report
+        run: |
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action Bot"
+          git add index.html reports/
+          git diff-index --quiet HEAD || git commit -m "auto: update daily AI industry report for $(date +'%Y-%m-%d')"
+          git push
